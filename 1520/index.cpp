@@ -1,42 +1,56 @@
 #include <stdio.h>
+#include <algorithm>
 
 #define MAXN 500
 
-int map[MAXN + 10][MAXN + 10];
-int check[MAXN + 10][MAXN + 10];
+using namespace std;
 
-void	dfs(int sx, int sy, int ex, int ey, int *cnt)
+typedef struct s_coor
 {
-	int xd[4] = {1, -1, 0, 0};
-	int yd[4] = {0, 0, 1, -1};
+	int x;
+	int y;
+	int h;
+} t_coor;
 
-	if (sx == ex - 1 && sy == ey - 1)
-	{
-		(*cnt)++;
-		return;
-	}
-	for (int i = 0; i < 4; i++)
-	{
-		if (sx + xd[i] < 0 || sx + xd[i] >= ex || sy + yd[i] < 0 || sy + yd[i] >= ey)
-			continue;
-		else if (map[sx + xd[i]][sy + yd[i]] < map[sx][sy] && !check[sx + xd[i]][sy + yd[i]])
-		{
-			check[sx + xd[i]][sy + yd[i]] = 1;
-			dfs(sx + xd[i], sy + yd[i], ex, ey, cnt);
-			check[sx + xd[i]][sy + yd[i]] = 0;
-		}
-	}
+
+int map[MAXN + 10][MAXN + 10];
+int di[MAXN + 10][MAXN + 10];
+t_coor li[MAXN * MAXN];
+
+int xd[4] = {1, -1, 0, 0};
+int yd[4] = {0, 0, 1, -1};
+
+int	cmpp(t_coor a, t_coor b)
+{
+	return (a.h > b.h);
 }
 
 int	main()
 {
-	int n, m, cnt = 0;
+	int n, m;
 
 	scanf("%d%d", &n, &m);
 	for (int i = 0; i < n; i++)
+	{
 		for (int j = 0; j < m; j++)
+		{
 			scanf("%d", &map[i][j]);
-	check[0][0] = 1;
-	dfs(0, 0, n, m, &cnt);
-	printf("%d\n", cnt);
+			li[i * m + j].x = i;
+			li[i * m + j].y = j;
+			li[i * m + j].h = map[i][j];
+		}
+	}
+	sort(li, li + n * m, cmpp);
+	di[0][0] = 1;
+	for (int i = 0; i < n * m; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			if (li[i].x + xd[j] < 0 || li[i].x + xd[j] >= n || li[i].y + yd[j] < 0 || li[i].y + yd[j] >= m)
+				continue;
+			if (map[li[i].x + xd[j]][li[i].y + yd[j]] < map[li[i].x][li[i].y])
+				di[li[i].x + xd[j]][li[i].y + yd[j]] += di[li[i].x][li[i].y];
+		}
+	}
+	printf("%d\n", di[n - 1][m - 1]);
 }
