@@ -1,9 +1,12 @@
 #include <stdio.h>
+#include <vector>
 
 #define MAXN 20000
 
+using namespace std;
+
 int	edge_num[MAXN + 10];
-int	edges[MAXN + 10][MAXN + 10];
+vector<int> edges[MAXN + 10];
 int gp[MAXN + 10];
 
 int inv(int x)
@@ -30,23 +33,26 @@ int	main()
 	{
 		ans = 1;
 		scanf("%d%d", &v, &e);
-		for (int j = 0; j < v; j++)
+		for (int j = 1; j <= v; j++)
 		{
+			edges[j].clear();
 			edge_num[j] = 0;
 			gp[j] = 0;
 		}
 		for (int j = 0; j < e; j++)
 		{
 			scanf("%d%d", &a, &b);
-			edges[a][edge_num[a]++] = b;
-			edges[b][edge_num[b]++] = a;
+			edges[a].push_back(b);
+			edges[b].push_back(a);
+			edge_num[a]++;
+			edge_num[b]++;
 		}
-		for (int j = 0; j < v; j++)
+		for (int j = 1; j <= v; j++)
 		{
 			if (!gp[j])
 				dfs(1, j);
 		}
-		for (int j = 0; j < v; j++)
+		for (int j = 1; j <= v; j++)
 		{
 			for (int i = 0; i < edge_num[j]; i++)
 			{
